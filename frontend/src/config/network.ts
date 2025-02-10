@@ -1,4 +1,4 @@
-export const NETWORK = 'devnet';
+export const NETWORK = process.env.NEXT_PUBLIC_SUI_NETWORK || 'testnet';
 
 export const NETWORK_URLS = {
     devnet: 'https://fullnode.devnet.sui.io:443',
