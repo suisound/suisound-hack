@@ -19,12 +19,12 @@ npm install
 npm run dev
 ```
 
-2. Access at `http://localhost:3000`
+2. Access at `https://suisound-hack.vercel.app`
 
-## Smart Contracts (Devnet)
+## Smart Contracts (Testnet)
 
-- Package ID: `0x6a63cb8c08ab21a4ddb0cd1aac4677da8480571508d9485ee0d921f2a1919ab7`
-- Treasury ID: `0x15cd94dd70bd38ae76e317e51f71417b499d967f909f2bfba828b2fc3e31426a`
+- Package ID: `0x1d05c21f6e45dd55a168c4b1ffce534d1584ac557f6188730ec48e332e37f8ab`
+- Treasury ID: `0x1b7bbd392fa41d0f035e7f7840896721574e751e31e9930eb81152900e1527b1`
 
 ## Features
 
@@ -39,8 +39,8 @@ npm run dev
 ## Requirements
 
 - Node.js
-- Sui Wallet
-- Devnet SUI tokens
+- Sui Wallet (configured for testnet)
+- Testnet SUI tokens
 
 ## License
 

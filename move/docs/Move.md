@@ -2,6 +2,12 @@
 
 Core staking contract for the SuiSound platform.
 
+## Deployment
+
+Current deployment on Testnet:
+- Package ID: `0x1d05c21f6e45dd55a168c4b1ffce534d1584ac557f6188730ec48e332e37f8ab`
+- Treasury ID: `0x1b7bbd392fa41d0f035e7f7840896721574e751e31e9930eb81152900e1527b1`
+
 ## Overview
 
 The contract manages staking of SUI tokens and rewards in SUISOUND tokens. Pro staker status unlocks AI music production features in the frontend.
