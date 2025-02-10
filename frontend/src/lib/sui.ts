@@ -1,7 +1,7 @@
-import { getFullnodeUrl, SuiClient } from '@mysten/sui/client';
+import { SuiClient } from '@mysten/sui/client';
 import { type SuiObjectResponse } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
-import { NETWORK, NETWORK_URLS } from '../config/network';
+import { NETWORK, NETWORK_URLS, PACKAGE_ID, TREASURY_ID } from '../config/network';
 
 let instance: SuiWrapper | null = null;
 
@@ -12,14 +12,15 @@ export class SuiWrapper {
 
     private constructor() {
         this.provider = new SuiClient({ 
-            url: NETWORK_URLS[NETWORK],
+            url: NETWORK_URLS[NETWORK]
         });
-        this.PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID || '';
-        this.TREASURY_ID = process.env.NEXT_PUBLIC_TREASURY_ID || '';
+        
+        this.PACKAGE_ID = PACKAGE_ID;
+        this.TREASURY_ID = TREASURY_ID;
 
-        if (!this.PACKAGE_ID || !this.TREASURY_ID) {
-            throw new Error('Missing required environment variables!');
-        }
+        console.log('Network:', NETWORK);
+        console.log('Package ID:', this.PACKAGE_ID);
+        console.log('Treasury ID:', this.TREASURY_ID);
     }
 
     public static getInstance(): SuiWrapper {
@@ -80,19 +81,28 @@ export class SuiWrapper {
         rewards: bigint;
     }> {
         try {
+            console.log('Fetching stake info for wallet:', walletAddress);
+            
             const treasuryObj = await this.provider.getObject({
                 id: this.TREASURY_ID,
                 options: { showContent: true }
             });
 
+            console.log('Treasury object:', treasuryObj);
+
             if (!treasuryObj.data?.content) {
+                console.log('No treasury content found');
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
             const treasuryFields = (treasuryObj.data.content as any)?.fields;
+            console.log('Treasury fields:', treasuryFields);
+            
             const stakesTable = treasuryFields?.stakes;
+            console.log('Stakes table:', stakesTable);
 
             if (!stakesTable) {
+                console.log('No stakes table found');
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
@@ -100,8 +110,13 @@ export class SuiWrapper {
                 parentId: stakesTable.fields.id.id,
             });
 
+            console.log('All stakes:', allStakes);
+
             const stake = allStakes.data.find(field => field.name?.value === walletAddress);
+            console.log('Found stake:', stake);
+            
             if (!stake) {
+                console.log('No stake found for wallet');
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
@@ -110,13 +125,18 @@ export class SuiWrapper {
                 options: { showContent: true }
             });
 
+            console.log('Stake object:', stakeObj);
+
             const stakeFields = (stakeObj.data?.content as any)?.fields?.value?.fields;
+            console.log('Stake fields:', stakeFields);
+            
             return {
                 stakeAmount: BigInt(stakeFields?.amount || 0),
                 isProStaker: stakeFields?.is_pro || false,
                 rewards: BigInt(stakeFields?.rewards || 0)
             };
         } catch (error) {
+            console.error('Error fetching stake info:', error);
             return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
         }
     }
