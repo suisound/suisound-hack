@@ -1,6 +1,6 @@
 # SuiSound Platform
 
-A decentralized music platform on Sui Network. Producers stake SUI tokens to earn SUISOUND rewards.
+A staking platform for music producers on Sui Network. Stake SUI to access AI-powered music production tools and social media integration.
 
 ## Project Structure
 
@@ -10,33 +10,36 @@ suisound/
 └── move/         # Sui Move smart contracts
 ```
 
-## Quick Start
+## Setup
 
-1. Start Frontend:
+1. Frontend:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-2. Access app at `http://localhost:3000`
+2. Access at `http://localhost:3000`
 
 ## Smart Contracts (Devnet)
 
 - Package ID: `0x6a63cb8c08ab21a4ddb0cd1aac4677da8480571508d9485ee0d921f2a1919ab7`
 - Treasury ID: `0x15cd94dd70bd38ae76e317e51f71417b499d967f909f2bfba828b2fc3e31426a`
 
-## Core Features
+## Features
 
-- Stake SUI tokens to earn SUISOUND rewards
-- Basic tier (1+ SUI): 1x rewards
-- Pro tier (100+ SUI): 5x rewards
-- Daily rewards rate: 1 SUISOUND per SUI staked
+- Connect Sui wallet
+- Stake/unstake SUI tokens
+- View staking status and rewards
+- Pro staker status at 1000 SUI unlocks:
+  - AI-powered beat and loop generation
+  - Social media content automation
+  - Video content generation
 
 ## Requirements
 
-- Node.js 16+
-- Sui Wallet browser extension
+- Node.js
+- Sui Wallet
 - Devnet SUI tokens
 
 ## License
