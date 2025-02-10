@@ -85,54 +85,55 @@ export class SuiWrapper {
             
             const treasuryObj = await this.provider.getObject({
                 id: this.TREASURY_ID,
-                options: { showContent: true }
+                options: { showContent: true, showDisplay: true }
             });
 
-            console.log('Treasury object:', treasuryObj);
+            console.log('Treasury object:', JSON.stringify(treasuryObj, null, 2));
 
             if (!treasuryObj.data?.content) {
                 console.log('No treasury content found');
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
-            const treasuryFields = (treasuryObj.data.content as any)?.fields;
-            console.log('Treasury fields:', treasuryFields);
-            
-            const stakesTable = treasuryFields?.stakes;
-            console.log('Stakes table:', stakesTable);
+            // Access the dynamic field table for stakes
+            const treasuryFields = (treasuryObj.data.content as any).fields;
+            const stakesTableId = treasuryFields.stakes.fields.id.id;
+            console.log('Stakes table ID:', stakesTableId);
 
-            if (!stakesTable) {
-                console.log('No stakes table found');
-                return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
-            }
-
+            // Get all stakes
             const allStakes = await this.provider.getDynamicFields({
-                parentId: stakesTable.fields.id.id,
+                parentId: stakesTableId,
             });
 
-            console.log('All stakes:', allStakes);
+            console.log('All stakes:', JSON.stringify(allStakes, null, 2));
 
-            const stake = allStakes.data.find(field => field.name?.value === walletAddress);
-            console.log('Found stake:', stake);
+            // Find stake by wallet address
+            const stake = allStakes.data.find(field => 
+                field.name?.value?.toLowerCase() === walletAddress.toLowerCase()
+            );
             
+            console.log('Found stake for wallet:', stake);
+
             if (!stake) {
                 console.log('No stake found for wallet');
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
+            // Get the stake object details
             const stakeObj = await this.provider.getObject({
                 id: stake.objectId,
-                options: { showContent: true }
+                options: { showContent: true, showDisplay: true }
             });
 
-            console.log('Stake object:', stakeObj);
+            console.log('Stake object:', JSON.stringify(stakeObj, null, 2));
 
-            const stakeFields = (stakeObj.data?.content as any)?.fields?.value?.fields;
+            // Access the stake fields correctly
+            const stakeFields = (stakeObj.data?.content as any)?.fields;
             console.log('Stake fields:', stakeFields);
-            
+
             return {
                 stakeAmount: BigInt(stakeFields?.amount || 0),
-                isProStaker: stakeFields?.is_pro || false,
+                isProStaker: Boolean(stakeFields?.is_pro || false),
                 rewards: BigInt(stakeFields?.rewards || 0)
             };
         } catch (error) {
