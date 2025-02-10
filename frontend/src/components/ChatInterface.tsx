@@ -2,24 +2,28 @@
 
 import { useState } from 'react';
 
+type Message = {
+    role: 'user' | 'assistant';
+    content: string;
+    timestamp: Date;
+};
+
 export default function ChatInterface() {
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState<Array<{
-        role: 'user' | 'assistant';
-        content: string;
-        timestamp: Date;
-    }>>([]);
+    const [messages, setMessages] = useState<Message[]>([]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!message.trim()) return;
 
         // Add user message
-        const newMessages = [
-            ...messages,
-            { role: 'user', content: message, timestamp: new Date() }
-        ];
-        setMessages(newMessages);
+        const newMessage: Message = {
+            role: 'user',
+            content: message,
+            timestamp: new Date()
+        };
+        
+        setMessages([...messages, newMessage]);
         setMessage('');
 
         // TODO: Add API call to ElizaOS here
