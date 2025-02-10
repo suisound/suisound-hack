@@ -13,7 +13,6 @@ export class SuiWrapper {
     private constructor() {
         this.provider = new SuiClient({ 
             url: NETWORK_URLS[NETWORK],
-            // Check if there's any name configuration here
         });
         this.PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID || '';
         this.TREASURY_ID = process.env.NEXT_PUBLIC_TREASURY_ID || '';
@@ -30,11 +29,14 @@ export class SuiWrapper {
         return instance;
     }
 
+    private configureTransaction(tx: Transaction, sender: string): Transaction {
+        tx.setSender(sender);
+        tx.setGasBudget(50000000);
+        return tx;
+    }
+
     async createStakeTransaction(walletAddress: string, amount: bigint): Promise<Transaction> {
-        const tx = new Transaction({
-            sender: walletAddress,
-            appId: 'SuiSound Agent',
-        });
+        const tx = this.configureTransaction(new Transaction(), walletAddress);
         
         try {
             const coins = await this.provider.getCoins({

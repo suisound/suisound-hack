@@ -5,7 +5,6 @@ import { useWalletKit } from '@mysten/wallet-kit';
 import BlobAnimation from './BlobAnimation';
 import { SuiWrapper } from '../lib/sui';
 import AgentConfiguration from './AgentConfiguration';
-import ChatInterface from './ChatInterface';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const { currentAccount } = useWalletKit();
@@ -15,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         isProStaker: boolean;
         rewards: bigint;
     }>({ stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) });
-    const [currentView, setCurrentView] = useState<'dashboard' | 'configure' | 'chat'>('dashboard');
+    const [currentView, setCurrentView] = useState<'dashboard' | 'configure'>('dashboard');
 
     // Fetch stake info when account changes
     useEffect(() => {
@@ -85,32 +84,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                         </button>
                                     </li>
 
-                                    {/* New Chat Button */}
-                                    <li>
-                                        <button 
-                                            onClick={() => setCurrentView('chat')}
-                                            className="w-full flex items-center px-4 py-3 text-gray-300 
-                                            bg-purple-500/20 hover:bg-purple-500/30 rounded-lg
-                                            border border-purple-500/30 hover:border-purple-400/50
-                                            transition-all duration-200 group"
-                                        >
-                                            <svg 
-                                                className="w-5 h-5 mr-3 text-purple-400 group-hover:text-purple-300" 
-                                                fill="none" 
-                                                stroke="currentColor" 
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path 
-                                                    strokeLinecap="round" 
-                                                    strokeLinejoin="round" 
-                                                    strokeWidth={2} 
-                                                    d="M12 4v16m8-8H4" 
-                                                />
-                                            </svg>
-                                            New Chat
-                                        </button>
-                                    </li>
-
                                     {/* Configure Agent */}
                                     <li>
                                         <button 
@@ -171,10 +144,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         <main className="h-[calc(100vh-4rem)] overflow-auto p-6">
                             {currentView === 'dashboard' ? (
                                 children
-                            ) : currentView === 'configure' ? (
-                                <AgentConfiguration />
                             ) : (
-                                <ChatInterface />
+                                <AgentConfiguration />
                             )}
                         </main>
                     </div>
