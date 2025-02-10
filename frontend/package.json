@@ -1,0 +1,31 @@
+{
+  "name": "suisound-agent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@mysten/sui": "^1.0.0",
+    "@mysten/wallet-kit": "^0.8.6",
+    "@suiet/wallet-kit": "^0.2.22",
+    "encoding": "^0.1.13",
+    "framer-motion": "^12.4.1",
+    "next": "14.1.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "three": "^0.173.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/three": "^0.173.0",
+    "autoprefixer": "^10",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5"
+  }
+}
