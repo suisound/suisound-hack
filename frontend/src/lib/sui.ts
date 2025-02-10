@@ -95,19 +95,16 @@ export class SuiWrapper {
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
-            // Access the dynamic field table for stakes
             const treasuryFields = (treasuryObj.data.content as any).fields;
             const stakesTableId = treasuryFields.stakes.fields.id.id;
             console.log('Stakes table ID:', stakesTableId);
 
-            // Get all stakes
             const allStakes = await this.provider.getDynamicFields({
                 parentId: stakesTableId,
             });
 
             console.log('All stakes:', JSON.stringify(allStakes, null, 2));
 
-            // Find stake by wallet address
             const stake = allStakes.data.find(field => 
                 field.name?.value?.toLowerCase() === walletAddress.toLowerCase()
             );
@@ -122,19 +119,23 @@ export class SuiWrapper {
             // Get the stake object details
             const stakeObj = await this.provider.getObject({
                 id: stake.objectId,
-                options: { showContent: true, showDisplay: true }
+                options: { showContent: true }
             });
 
             console.log('Stake object:', JSON.stringify(stakeObj, null, 2));
 
-            // Access the stake fields correctly
-            const stakeFields = (stakeObj.data?.content as any)?.fields;
+            // Access the stake fields correctly through the dynamic field value
+            const stakeFields = stakeObj.data?.content?.fields?.value?.fields;
             console.log('Stake fields:', stakeFields);
 
+            if (!stakeFields) {
+                return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
+            }
+
             return {
-                stakeAmount: BigInt(stakeFields?.amount || 0),
-                isProStaker: Boolean(stakeFields?.is_pro || false),
-                rewards: BigInt(stakeFields?.rewards || 0)
+                stakeAmount: BigInt(stakeFields.amount || 0),
+                isProStaker: Boolean(stakeFields.is_pro || false),
+                rewards: BigInt(0) // We'll calculate this based on time difference later
             };
         } catch (error) {
             console.error('Error fetching stake info:', error);
