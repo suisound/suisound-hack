@@ -105,9 +105,10 @@ export class SuiWrapper {
 
             console.log('All stakes:', JSON.stringify(allStakes, null, 2));
 
-            const stake = allStakes.data.find(field => 
-                field.name?.value?.toLowerCase() === walletAddress.toLowerCase()
-            );
+            const stake = allStakes.data.find(field => {
+                const nameValue = field.name?.value as string | undefined;
+                return nameValue?.toLowerCase() === walletAddress.toLowerCase();
+            });
             
             console.log('Found stake for wallet:', stake);
 
@@ -125,7 +126,8 @@ export class SuiWrapper {
             console.log('Stake object:', JSON.stringify(stakeObj, null, 2));
 
             // Access the stake fields correctly through the dynamic field value
-            const stakeFields = stakeObj.data?.content?.fields?.value?.fields;
+            const stakeContent = stakeObj.data?.content as { type: string; fields: any } | undefined;
+            const stakeFields = stakeContent?.fields?.value?.fields;
             console.log('Stake fields:', stakeFields);
 
             if (!stakeFields) {
@@ -143,21 +145,31 @@ export class SuiWrapper {
         }
     }
 
-    async createUnstakeTransaction(): Promise<Transaction> {
-        const tx = new Transaction();
-        tx.moveCall({
-            target: `${this.PACKAGE_ID}::suisound::unstake`,
-            arguments: [tx.object(this.TREASURY_ID)]
-        });
-        return tx;
+    async createUnstakeTransaction(walletAddress: string): Promise<Transaction> {
+        const tx = this.configureTransaction(new Transaction(), walletAddress);
+        try {
+            tx.moveCall({
+                target: `${this.PACKAGE_ID}::suisound::unstake`,
+                arguments: [tx.object(this.TREASURY_ID)]
+            });
+            return tx;
+        } catch (error) {
+            console.error('Error creating unstake transaction:', error);
+            throw error;
+        }
     }
 
-    async createClaimRewardsTransaction(): Promise<Transaction> {
-        const tx = new Transaction();
-        tx.moveCall({
-            target: `${this.PACKAGE_ID}::suisound::claim_rewards`,
-            arguments: [tx.object(this.TREASURY_ID)]
-        });
-        return tx;
+    async createClaimRewardsTransaction(walletAddress: string): Promise<Transaction> {
+        const tx = this.configureTransaction(new Transaction(), walletAddress);
+        try {
+            tx.moveCall({
+                target: `${this.PACKAGE_ID}::suisound::claim_rewards`,
+                arguments: [tx.object(this.TREASURY_ID)]
+            });
+            return tx;
+        } catch (error) {
+            console.error('Error creating claim rewards transaction:', error);
+            throw error;
+        }
     }
 } 

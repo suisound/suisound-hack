@@ -5,16 +5,18 @@ import { useWalletKit } from '@mysten/wallet-kit';
 import BlobAnimation from './BlobAnimation';
 import { SuiWrapper } from '../lib/sui';
 import AgentConfiguration from './AgentConfiguration';
+import ElizaChat from './ElizaChat';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-    const { currentAccount } = useWalletKit();
+    const { currentAccount, disconnect } = useWalletKit();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [stakeInfo, setStakeInfo] = useState<{
         stakeAmount: bigint;
         isProStaker: boolean;
         rewards: bigint;
     }>({ stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) });
-    const [currentView, setCurrentView] = useState<'dashboard' | 'configure'>('dashboard');
+    const [currentView, setCurrentView] = useState<'dashboard' | 'configure' | 'chat'>('dashboard');
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     // Fetch stake info when account changes
     useEffect(() => {
@@ -84,7 +86,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                         </button>
                                     </li>
 
-                                    {/* Configure Agent */}
+                                    {/* Chat Button */}
+                                    <li>
+                                        <button 
+                                            onClick={() => {
+                                                setCurrentView('chat');
+                                                setIsChatOpen(true);
+                                            }}
+                                            className={`w-full flex items-center px-4 py-2 text-gray-300 
+                                            hover:bg-gray-700/50 rounded-lg ${currentView === 'chat' ? 'bg-gray-700/50' : ''}`}
+                                        >
+                                            <svg 
+                                                className="w-5 h-5 mr-3 text-gray-400" 
+                                                fill="none" 
+                                                stroke="currentColor" 
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path 
+                                                    strokeLinecap="round" 
+                                                    strokeLinejoin="round" 
+                                                    strokeWidth={2} 
+                                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+                                                />
+                                            </svg>
+                                            Chat with Agent
+                                        </button>
+                                    </li>
+
+                                    {/* Configure Agent Button */}
                                     <li>
                                         <button 
                                             onClick={() => setCurrentView('configure')}
@@ -97,12 +126,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                                 stroke="currentColor" 
                                                 viewBox="0 0 24 24"
                                             >
-                                                <path 
-                                                    strokeLinecap="round" 
-                                                    strokeLinejoin="round" 
-                                                    strokeWidth={2} 
-                                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" 
-                                                />
                                                 <path 
                                                     strokeLinecap="round" 
                                                     strokeLinejoin="round" 
@@ -135,8 +158,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                 
                                 {/* Current section title */}
                                 <div className="flex-1">
-                                    <h2 className="text-lg font-semibold">Dashboard</h2>
+                                    <h2 className="text-lg font-semibold">
+                                        {currentView === 'dashboard' ? 'Dashboard' : 
+                                         currentView === 'configure' ? 'Configure Agent' : 'Chat with Agent'}
+                                    </h2>
                                 </div>
+
+                                {/* Disconnect wallet button */}
+                                <button
+                                    onClick={disconnect}
+                                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-white rounded-lg
+                                    border border-red-500/30 hover:border-red-400/50 transition-all duration-200"
+                                >
+                                    Disconnect Wallet
+                                </button>
                             </div>
                         </div>
 
@@ -144,8 +179,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         <main className="h-[calc(100vh-4rem)] overflow-auto p-6">
                             {currentView === 'dashboard' ? (
                                 children
-                            ) : (
+                            ) : currentView === 'configure' ? (
                                 <AgentConfiguration />
+                            ) : (
+                                <ElizaChat isOpen={isChatOpen} onClose={() => {
+                                    setIsChatOpen(false);
+                                    setCurrentView('dashboard');
+                                }} />
                             )}
                         </main>
                     </div>
