@@ -20,6 +20,18 @@ const nextConfig = {
       'three': path.resolve('./node_modules/three')
     }
     return config
+  },
+  optimizeFonts: false,
+  cssModules: true,
+  cssLoaderOptions: {
+    importLoaders: 1,
+    localIdentName: "[local]___[hash:base64:5]",
+  },
+  images: {
+    unoptimized: true,
+  },
+  experimental: {
+    optimizeCss: false // Disable CSS optimization temporarily
   }
 }
 
