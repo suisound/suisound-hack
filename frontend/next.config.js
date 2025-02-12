@@ -19,7 +19,8 @@ const nextConfig = {
       ...config.resolve.alias,
       'three': path.resolve('./node_modules/three')
     };
-    // Disable CSS optimization in webpack
+
+    // Handle CSS differently
     config.module.rules.forEach((rule) => {
       if (rule.oneOf) {
         rule.oneOf.forEach((one) => {
@@ -29,19 +30,33 @@ const nextConfig = {
         });
       }
     });
+
+    // Add custom CSS handling
+    config.module.rules.push({
+      test: /\.css$/,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            importLoaders: 1,
+            modules: false
+          }
+        },
+        'postcss-loader'
+      ]
+    });
+
     return config;
   },
   optimizeFonts: false,
-  cssModules: true,
-  cssLoaderOptions: {
-    importLoaders: 1,
-    localIdentName: "[local]___[hash:base64:5]",
-  },
   images: {
     unoptimized: true,
   },
   experimental: {
-    optimizeCss: false,
+    // Use a different CSS minifier
+    optimizeCss: true,
+    cssMinifier: 'csso'
   }
 }
 
