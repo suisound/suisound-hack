@@ -19,44 +19,15 @@ const nextConfig = {
       ...config.resolve.alias,
       'three': path.resolve('./node_modules/three')
     };
-
-    // Handle CSS differently
-    config.module.rules.forEach((rule) => {
-      if (rule.oneOf) {
-        rule.oneOf.forEach((one) => {
-          if (one.sideEffects === false) {
-            one.sideEffects = true;
-          }
-        });
-      }
-    });
-
-    // Add custom CSS handling
-    config.module.rules.push({
-      test: /\.css$/,
-      use: [
-        'style-loader',
-        {
-          loader: 'css-loader',
-          options: {
-            importLoaders: 1,
-            modules: false
-          }
-        },
-        'postcss-loader'
-      ]
-    });
-
     return config;
   },
+  // Only keep essential CSS-related options
   optimizeFonts: false,
   images: {
     unoptimized: true,
   },
   experimental: {
-    // Use a different CSS minifier
-    optimizeCss: true,
-    cssMinifier: 'csso'
+    optimizeCss: false  // Disable experimental CSS optimization
   }
 }
 
