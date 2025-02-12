@@ -18,8 +18,18 @@ const nextConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       'three': path.resolve('./node_modules/three')
-    }
-    return config
+    };
+    // Disable CSS optimization in webpack
+    config.module.rules.forEach((rule) => {
+      if (rule.oneOf) {
+        rule.oneOf.forEach((one) => {
+          if (one.sideEffects === false) {
+            one.sideEffects = true;
+          }
+        });
+      }
+    });
+    return config;
   },
   optimizeFonts: false,
   cssModules: true,
@@ -31,7 +41,7 @@ const nextConfig = {
     unoptimized: true,
   },
   experimental: {
-    optimizeCss: false // Disable CSS optimization temporarily
+    optimizeCss: false,
   }
 }
 
