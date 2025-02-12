@@ -1,5 +1,3 @@
-const path = require('path');
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: {
@@ -13,22 +11,6 @@ const nextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  transpilePackages: ['three'],
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      'three': path.resolve('./node_modules/three')
-    };
-    return config;
-  },
-  // Only keep essential CSS-related options
-  optimizeFonts: false,
-  images: {
-    unoptimized: true,
-  },
-  experimental: {
-    optimizeCss: false  // Disable experimental CSS optimization
-  }
 }
 
 module.exports = nextConfig 
