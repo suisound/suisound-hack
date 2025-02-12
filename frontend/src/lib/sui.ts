@@ -1,6 +1,6 @@
 import { SuiClient } from '@mysten/sui/client';
-import { type SuiObjectResponse } from '@mysten/sui/client';
 import { Transaction } from '@mysten/sui/transactions';
+import { type SuiObjectResponse } from '@mysten/sui/client';
 import { NETWORK, NETWORK_URLS, PACKAGE_ID, TREASURY_ID } from '../config/network';
 
 let instance: SuiWrapper | null = null;
