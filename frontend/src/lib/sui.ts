@@ -172,4 +172,26 @@ export class SuiWrapper {
             throw error;
         }
     }
+
+    async getSuiSoundBalance(walletAddress: string): Promise<bigint> {
+        try {
+            console.log('Fetching SUISOUND balance for:', walletAddress);
+            const coins = await this.provider.getCoins({
+                owner: walletAddress,
+                coinType: `${this.PACKAGE_ID}::suisound::SUISOUND`
+            });
+
+            console.log('Found coins:', coins);
+            let totalBalance = BigInt(0);
+            for (const coin of coins.data) {
+                totalBalance += BigInt(coin.balance);
+            }
+            
+            console.log('Total SUISOUND balance:', totalBalance.toString());
+            return totalBalance;
+        } catch (error) {
+            console.error('Error fetching SUISOUND balance:', error);
+            return BigInt(0);
+        }
+    }
 } 

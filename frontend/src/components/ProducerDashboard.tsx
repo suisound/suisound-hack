@@ -20,11 +20,13 @@ export default function ProducerDashboard() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
     const [isLoading, setIsLoading] = useState(true);
+    const [suiSoundBalance, setSuiSoundBalance] = useState<bigint>(BigInt(0));
 
     const suiWrapper = SuiWrapper.getInstance();
 
     useEffect(() => {
         fetchStakeInfo();
+        fetchSuiSoundBalance();
     }, [currentAccount]);
 
     const fetchStakeInfo = async () => {
@@ -37,6 +39,17 @@ export default function ProducerDashboard() {
                 console.error('Error fetching stake info:', error);
             } finally {
                 setIsLoading(false);
+            }
+        }
+    };
+
+    const fetchSuiSoundBalance = async () => {
+        if (currentAccount?.address) {
+            try {
+                const balance = await suiWrapper.getSuiSoundBalance(currentAccount.address);
+                setSuiSoundBalance(balance);
+            } catch (error) {
+                console.error('Error fetching SUI Sound balance:', error);
             }
         }
     };
@@ -199,36 +212,36 @@ export default function ProducerDashboard() {
                         variants={container}
                         initial="hidden"
                         animate="show"
-                        className="p-2 grid grid-cols-3 md:grid-cols-3 gap-1.5 md:gap-4"
+                        className="p-2 grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4"
                     >
                         {[
                             {
+                                title: 'SUISOUND Balance',
+                                value: `${(Number(suiSoundBalance)).toFixed(2)} SUISOUND`,
+                                desc: 'Your current balance'
+                            },
+                            {
+                                title: 'Pending Rewards',
+                                value: `${(Number(stakeInfo.rewards)).toFixed(2)} SUISOUND`,
+                                desc: stakeInfo.rewards > BigInt(0) ? '✨ Ready to claim!' : 'Accumulating...'
+                            },
+                            {
                                 title: 'Producer Status',
                                 value: `${(Number(stakeInfo.stakeAmount) / 1_000_000_000).toFixed(2)} SUI`,
-                                desc: '1000 SUI = Pro'
-                            },
-                            {
-                                title: 'Access Level',
-                                value: stakeInfo.isProStaker ? 'Pro' : 'Basic',
-                                desc: stakeInfo.isProStaker ? 'Full Access' : 'Stake More'
-                            },
-                            {
-                                title: 'Rewards',
-                                value: `${(Number(stakeInfo.rewards) / 1_000_000_000).toFixed(2)}`,
-                                desc: 'SUISOUND'
+                                desc: stakeInfo.stakeAmount >= BigInt(1_000_000_000) ? 'Pro Status Active' : 'Need 1000 SUI for Pro'
                             }
                         ].map((card, index) => (
                             <motion.div
                                 key={card.title}
                                 variants={item}
-                                className="cyberpunk-card rounded-lg p-1.5 backdrop-blur-sm 
-                                transition-all duration-300 hover:border-purple-500/30 flex flex-col"
+                                className="cyberpunk-card rounded-lg p-3 backdrop-blur-sm 
+                                transition-all duration-300 hover:border-purple-500/30 flex flex-col w-full"
                             >
-                                <h3 className="mono-font text-[10px] md:text-xs font-medium text-purple-200/70">{card.title}</h3>
-                                <p className="cyberpunk-text text-xs md:text-2xl font-bold mt-0.5" data-text={card.value}>
+                                <h3 className="mono-font text-sm md:text-base font-medium text-purple-200">{card.title}</h3>
+                                <p className="cyberpunk-text text-lg md:text-2xl font-bold mt-1" data-text={card.value}>
                                     {card.value}
                                 </p>
-                                <p className="mono-font text-[8px] md:text-[10px] text-gray-400 mt-0.5">
+                                <p className="mono-font text-xs md:text-sm text-gray-400 mt-1">
                                     {card.desc}
                                 </p>
                                 <div className="scanline opacity-20"></div>
