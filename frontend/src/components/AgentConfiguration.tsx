@@ -25,143 +25,165 @@ export default function AgentConfiguration() {
     const [selectedPlatform, setSelectedPlatform] = useState<keyof typeof config.platforms | null>(null);
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-800/30 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-gray-700/50">
-                <div className="p-8">
-                    <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-                        Agent Configuration
-                    </h2>
+        <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 p-2 md:p-4 overflow-y-auto">
+                <div className="cyberpunk-card bg-gray-900/80 backdrop-blur-xl rounded-xl border border-purple-500/20 
+                    shadow-2xl">
+                    <div className="scanline opacity-10"></div>
+                    <div className="p-1 md:p-4 space-y-2 md:space-y-4">
+                        <h2 
+                            className="cyberpunk-text text-base md:text-xl font-bold"
+                            data-text="AGENT CONFIGURATION"
+                        >
+                            AGENT CONFIGURATION
+                        </h2>
+                        <p className="mono-font text-xs md:text-sm text-purple-300/80">
+                            &gt; Configure your AI producer agent's personality, capabilities, and social presence.
+                            <br/>&gt; Pro features require 1000 SUI stake.
+                        </p>
 
-                    <form className="space-y-6">
-                        {/* Basic Info */}
-                        <div className="space-y-4">
+                        <form className="space-y-2 md:space-y-4">
+                            {/* Basic Info - Made more compact */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
-                                    Agent Name
-                                </label>
-                                <input
-                                    type="text"
-                                    value={config.name}
-                                    onChange={(e) => setConfig({...config, name: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-700/50 text-white"
-                                    placeholder="Enter agent name"
-                                />
+                                <h3 className="cyberpunk-text text-xs md:text-sm font-bold mb-1 md:mb-2" data-text="AGENT_IDENTITY">
+                                    AGENT_IDENTITY
+                                </h3>
+                                <div className="grid grid-cols-1 gap-1 md:gap-2">
+                                    <div>
+                                        <label className="mono-font text-[10px] md:text-xs font-medium text-purple-300/70 mb-0.5 block tracking-wider">
+                                            &gt; AGENT_NAME
+                                            <span className="text-gray-400 ml-1">(Your agent's public identity)</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={config.name}
+                                            onChange={(e) => setConfig({...config, name: e.target.value})}
+                                            className="w-full px-2 py-1 text-xs md:text-sm rounded-lg bg-gray-800/50 text-white border border-gray-600/50 
+                                                focus:outline-none focus:ring-1 focus:ring-purple-500/30 placeholder-gray-500 shadow-inner
+                                                mono-font tracking-wide"
+                                            placeholder="e.g., CyberBeats_2077, VaporWave_AI..."
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mono-font text-[10px] md:text-xs font-medium text-purple-300/70 mb-0.5 block tracking-wider">
+                                            &gt; PERSONALITY_MATRIX
+                                            <span className="text-gray-400 ml-1">(Define agent behavior)</span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={config.bio}
+                                            onChange={(e) => setConfig({...config, bio: e.target.value})}
+                                            className="w-full px-2 py-1 text-xs md:text-sm rounded-lg bg-gray-800/50 text-white border border-gray-600/50 
+                                                focus:outline-none focus:ring-1 focus:ring-purple-500/30 placeholder-gray-500 shadow-inner
+                                                mono-font tracking-wide"
+                                            placeholder="e.g., Cyberpunk producer, Lo-fi specialist..."
+                                        />
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
-                                    Bio/Personality
-                                </label>
-                                <textarea
-                                    value={config.bio}
-                                    onChange={(e) => setConfig({...config, bio: e.target.value})}
-                                    className="w-full px-4 py-2 rounded-lg border border-gray-600 bg-gray-700/50 text-white h-32"
-                                    placeholder="Describe your agent's personality and behavior"
-                                />
-                            </div>
-                        </div>
 
-                        {/* Platform Integration */}
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-200 mb-4">Platform Integration</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                {Object.entries(config.platforms).map(([platform, settings]) => (
-                                    <div key={platform} className="p-4 rounded-lg border border-gray-700 bg-gray-800/30">
-                                        <div className="flex items-center justify-between">
-                                            <label className="flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={settings.enabled}
-                                                    onChange={(e) => setConfig({
-                                                        ...config,
-                                                        platforms: {
-                                                            ...config.platforms,
-                                                            [platform]: { ...settings, enabled: e.target.checked }
-                                                        }
-                                                    })}
-                                                    className="rounded border-gray-600 bg-gray-700 text-purple-500 focus:ring-purple-500"
-                                                />
-                                                <span className="ml-2 text-gray-300 capitalize">{platform}</span>
-                                            </label>
-                                            <div className="flex items-center space-x-2">
-                                                <Tooltip 
-                                                    content={
-                                                        <div className="max-w-xs">
-                                                            <p className="text-sm text-gray-300">
-                                                                {platform === 'twitter' ? 
-                                                                    'Connect with your Twitter account credentials' :
-                                                                    'Connect using API credentials from your developer account'}
-                                                            </p>
-                                                            <p className="text-xs text-gray-400 mt-1">
-                                                                🔒 Credentials are stored locally and used only for direct API calls
-                                                            </p>
-                                                        </div>
-                                                    }
-                                                    position="left"
-                                                >
-                                                    <button className="p-1 text-gray-400 hover:text-gray-300">
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </button>
-                                                </Tooltip>
+                            {/* Platform Integration */}
+                            <div>
+                                <h3 className="cyberpunk-text text-xs md:text-sm font-bold mb-1 md:mb-2" data-text="SOCIAL_MATRIX">
+                                    SOCIAL_MATRIX
+                                    <span className="mono-font text-[10px] md:text-xs font-normal text-gray-400 ml-2">Connect platforms</span>
+                                </h3>
+                                <div className="grid grid-cols-3 gap-1 md:gap-2">
+                                    {Object.entries(config.platforms).map(([platform, settings], index) => (
+                                        <div key={platform} 
+                                            className="p-1 md:p-1.5 rounded-lg border border-purple-500/20 bg-gray-800/30"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <label className="flex items-center space-x-1 md:space-x-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={settings.enabled}
+                                                        onChange={(e) => setConfig({
+                                                            ...config,
+                                                            platforms: {
+                                                                ...config.platforms,
+                                                                [platform]: { ...settings, enabled: e.target.checked }
+                                                            }
+                                                        })}
+                                                        className="form-checkbox h-2 w-2 md:h-3 md:w-3 text-purple-500 border-gray-600 bg-gray-700 rounded"
+                                                    />
+                                                    <span className="mono-font text-[10px] md:text-xs text-white tracking-wider uppercase">{platform}</span>
+                                                </label>
                                                 <button
                                                     type="button"
-                                                    className="p-1 text-gray-400 hover:text-gray-300"
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
+                                                    className="p-0.5 md:p-1 text-gray-400"
+                                                    onClick={() => {
                                                         setSelectedPlatform(platform as keyof typeof config.platforms);
                                                         setModalOpen(true);
                                                     }}
+                                                    title="Configure platform settings"
                                                 >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg className="w-2 h-2 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                     </svg>
                                                 </button>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Features */}
-                        <div>
-                            <h3 className="text-lg font-medium text-gray-200 mb-4">Features</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {Object.entries(config.features).map(([feature, enabled]) => (
-                                    <label key={feature} className="flex items-center p-4 rounded-lg border border-gray-700 bg-gray-800/30">
-                                        <input
-                                            type="checkbox"
-                                            checked={enabled}
-                                            onChange={(e) => setConfig({
-                                                ...config,
-                                                features: {
-                                                    ...config.features,
-                                                    [feature]: e.target.checked
-                                                }
-                                            })}
-                                            className="rounded border-gray-600 bg-gray-700 text-purple-500 focus:ring-purple-500"
-                                        />
-                                        <span className="ml-2 text-gray-300 capitalize">
-                                            {feature.replace(/([A-Z])/g, ' $1').trim()}
-                                        </span>
-                                    </label>
-                                ))}
+                            {/* Features */}
+                            <div>
+                                <h3 className="cyberpunk-text text-xs md:text-sm font-bold mb-1 md:mb-2" data-text="CAPABILITY_MATRIX">
+                                    CAPABILITY_MATRIX
+                                    <span className="mono-font text-[10px] md:text-xs font-normal text-gray-400 ml-2">Define abilities</span>
+                                </h3>
+                                <div className="grid grid-cols-2 gap-1 md:gap-2">
+                                    {[
+                                        { key: 'autonomousContent', label: 'AUTONOMOUS_POSTING', desc: 'Agent creates and posts content independently' },
+                                        { key: 'audioGeneration', label: 'BEAT_GENERATION', desc: 'AI-powered music production' },
+                                        { key: 'imageGeneration', label: 'VISUAL_SYNTHESIS', desc: 'Create artwork for releases' },
+                                        { key: 'videoGeneration', label: 'VIDEO_CREATION', desc: 'Generate music videos and promos' }
+                                    ].map(({ key, label, desc }, index) => (
+                                        <label key={key} 
+                                            className="p-1 md:p-1.5 rounded-lg border border-purple-500/20 bg-gray-800/30"
+                                            title={desc}
+                                        >
+                                            <div className="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={config.features[key as keyof typeof config.features]}
+                                                    onChange={(e) => setConfig({
+                                                        ...config,
+                                                        features: {
+                                                            ...config.features,
+                                                            [key]: e.target.checked
+                                                        }
+                                                    })}
+                                                    className="form-checkbox h-2 w-2 md:h-3 md:w-3 text-purple-500 border-gray-600 bg-gray-700 rounded"
+                                                />
+                                                <span className="mono-font text-[10px] md:text-xs text-white ml-1 md:ml-2 tracking-wider">
+                                                    {label}
+                                                </span>
+                                            </div>
+                                            <p className="mono-font text-[8px] md:text-[10px] text-gray-400 mt-0.5 md:mt-1 leading-tight">
+                                                {desc}
+                                            </p>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex justify-end pt-6">
-                            <button
-                                type="submit"
-                                className="px-6 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-white rounded-lg
-                                border border-purple-500/30 hover:border-purple-400/50 transition-all duration-200"
-                            >
-                                Save Configuration
-                            </button>
-                        </div>
-                    </form>
+                            <div className="flex justify-between items-center pt-1">
+                                <p className="mono-font text-[10px] md:text-xs text-purple-300/60">
+                                    &gt; Changes auto-save
+                                </p>
+                                <button
+                                    type="submit"
+                                    className="px-2 md:px-3 py-1 md:py-1.5 bg-purple-500/20 text-white rounded-lg 
+                                        border border-purple-500/30 mono-font tracking-wider text-[10px] md:text-xs"
+                                >
+                                    <span className="relative z-10">&gt; DEPLOY_AGENT</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
 

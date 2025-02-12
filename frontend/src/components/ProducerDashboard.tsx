@@ -92,49 +92,92 @@ export default function ProducerDashboard() {
 
     if (!currentAccount) {
         return (
-            <div className="min-h-screen relative overflow-hidden bg-gray-900">
-                <BlobAnimation />
-                
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gray-900/30 to-gray-900/70" />
-
-                {/* Content */}
-                <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
-                    <div className="text-center max-w-2xl mx-auto backdrop-blur-lg bg-gray-900/30 p-8 rounded-2xl border border-gray-700 shadow-2xl">
-                        <h1 
-                            className="cyberpunk-text text-5xl font-bold mb-6"
-                            data-text="Welcome to SuiSound Platform"
-                        >
-                            Welcome to SuiSound Platform
-                        </h1>
-                        <p className="text-gray-300 text-lg mb-8 leading-relaxed">
-                            Join the next generation of decentralized music production. 
-                            Stake your SUI tokens and become part of the revolution.
+            <div className="relative flex flex-col items-center justify-center min-h-[calc(100vh-120px)] px-4 py-8">
+                {/* Main content */}
+                <div className="max-w-4xl w-full space-y-12">
+                    {/* Hero section */}
+                    <div className="text-center space-y-6">
+                        <h2 className="cyberpunk-text text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+                            data-text="Next-Gen Music Production">
+                            Next-Gen Music Production
+                        </h2>
+                        <p className="mono-font text-lg md:text-xl text-purple-300/80 max-w-2xl mx-auto leading-relaxed">
+                            Create, train, and monetize autonomous AI music producers powered by blockchain technology.
                         </p>
-                        <div className="space-y-4">
-                            <ConnectButton />
-                            <p className="text-gray-400 text-sm">
-                                Connect your wallet to start staking and earning rewards
-                            </p>
-                        </div>
                     </div>
 
-                    {/* Stats or features */}
-                    <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                        {['Stake & Earn', 'Pro Benefits', 'Community'].map((title, index) => (
-                            <div 
-                                key={title}
-                                className="cyberpunk-card backdrop-blur-lg bg-gray-900/30 p-6 rounded-xl border border-gray-700 transform transition-all duration-300 hover:scale-105 hover:border-blue-500"
-                                style={{
-                                    animationDelay: `${index * 200}ms`,
-                                    animation: 'fadeIn 0.5s ease-out forwards'
-                                }}
-                            >
-                                <div className="text-blue-400 mb-2 text-2xl font-bold">{title}</div>
-                                <p className="text-gray-300">
-                                    {/* Your description text */}
-                                </p>
-                                <div className="scanline"></div>
+                    {/* Feature grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                            {
+                                title: 'AI-Powered Creation',
+                                desc: 'Generate unique beats and melodies using advanced AI models. Train your agent with your style preferences.',
+                                icon: (
+                                    <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                )
+                            },
+                            {
+                                title: 'Web3 Integration',
+                                desc: 'Seamless blockchain integration for secure ownership and trading. Stake SUI tokens to unlock pro features.',
+                                icon: (
+                                    <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                )
+                            },
+                            {
+                                title: 'Monetization',
+                                desc: 'Turn your AI agents into NFTs. Earn from beats they create and their social engagement.',
+                                icon: (
+                                    <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                )
+                            }
+                        ].map((feature, i) => (
+                            <div key={feature.title}
+                                className="cyberpunk-card relative p-6 bg-gray-900/50 backdrop-blur-xl rounded-xl border border-purple-500/20 
+                                    hover:border-purple-500/40 transition-all duration-300 group overflow-hidden">
+                                <div className="scanline opacity-10"></div>
+                                <div className="relative z-10">
+                                    <div className="flex items-center space-x-3 mb-4">
+                                        <div className="p-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                                            {feature.icon}
+                                        </div>
+                                        <h3 className="cyberpunk-text text-xl font-bold" data-text={feature.title}>
+                                            {feature.title}
+                                        </h3>
+                                    </div>
+                                    <p className="mono-font text-sm text-gray-300/90 leading-relaxed">
+                                        {feature.desc}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Stats or highlights */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {[
+                            { label: 'AGENTS CREATED', value: '1.2K+' },
+                            { label: 'BEATS GENERATED', value: '50K+' },
+                            { label: 'TOTAL STAKED', value: '500K SUI' },
+                            { label: 'ACTIVE PRODUCERS', value: '850+' }
+                        ].map((stat) => (
+                            <div key={stat.label} 
+                                className="cyberpunk-card relative p-4 bg-gray-900/30 backdrop-blur-sm rounded-lg border border-purple-500/20 
+                                    text-center group hover:border-purple-500/40 transition-all duration-300">
+                                <div className="scanline opacity-10"></div>
+                                <div className="relative z-10">
+                                    <div className="cyberpunk-text text-xl md:text-2xl font-bold text-purple-300" data-text={stat.value}>
+                                        {stat.value}
+                                    </div>
+                                    <div className="mono-font text-[10px] md:text-xs text-gray-400 mt-1">
+                                        {stat.label}
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -144,43 +187,49 @@ export default function ProducerDashboard() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto">
-            <div className="bg-gray-800/30 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-gray-700/50">
+        <div className="flex-1 flex flex-col h-full">
+            <div className="flex-1 flex flex-col">
                 {isLoading ? (
-                    <div className="p-8 text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                        <p className="mt-2 text-gray-400">Loading stake info...</p>
+                    <div className="p-2 md:p-4 text-center">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto"></div>
+                        <p className="mt-1 text-sm text-gray-400">Loading...</p>
                     </div>
                 ) : (
                     <motion.div 
                         variants={container}
                         initial="hidden"
                         animate="show"
-                        className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6"
+                        className="p-2 grid grid-cols-3 md:grid-cols-3 gap-1.5 md:gap-4"
                     >
                         {[
                             {
-                                title: 'Current Stake',
-                                value: `${(Number(stakeInfo.stakeAmount) / 1_000_000_000).toFixed(2)} SUI`
+                                title: 'Producer Status',
+                                value: `${(Number(stakeInfo.stakeAmount) / 1_000_000_000).toFixed(2)} SUI`,
+                                desc: '1000 SUI = Pro'
                             },
                             {
-                                title: 'Status',
-                                value: stakeInfo.isProStaker ? 'Pro Staker' : 'Basic Staker'
+                                title: 'Access Level',
+                                value: stakeInfo.isProStaker ? 'Pro' : 'Basic',
+                                desc: stakeInfo.isProStaker ? 'Full Access' : 'Stake More'
                             },
                             {
-                                title: 'Available Rewards',
-                                value: `${(Number(stakeInfo.rewards) / 1_000_000_000).toFixed(2)} SUISOUND`
+                                title: 'Rewards',
+                                value: `${(Number(stakeInfo.rewards) / 1_000_000_000).toFixed(2)}`,
+                                desc: 'SUISOUND'
                             }
                         ].map((card, index) => (
                             <motion.div
                                 key={card.title}
                                 variants={item}
-                                className="cyberpunk-card rounded-xl p-6 backdrop-blur-sm 
-                                transition-all duration-300 hover:border-purple-500/30"
+                                className="cyberpunk-card rounded-lg p-1.5 backdrop-blur-sm 
+                                transition-all duration-300 hover:border-purple-500/30 flex flex-col"
                             >
-                                <h3 className="text-sm font-medium text-purple-200/70">{card.title}</h3>
-                                <p className="mt-2 text-3xl font-bold cyberpunk-text" data-text={card.value}>
+                                <h3 className="mono-font text-[10px] md:text-xs font-medium text-purple-200/70">{card.title}</h3>
+                                <p className="cyberpunk-text text-xs md:text-2xl font-bold mt-0.5" data-text={card.value}>
                                     {card.value}
+                                </p>
+                                <p className="mono-font text-[8px] md:text-[10px] text-gray-400 mt-0.5">
+                                    {card.desc}
                                 </p>
                                 <div className="scanline opacity-20"></div>
                             </motion.div>
@@ -188,48 +237,69 @@ export default function ProducerDashboard() {
                     </motion.div>
                 )}
 
-                <div className="px-8 pb-8">
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Stake Amount (SUI)
-                        </label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="px-2 pb-2">
+                    <div className="cyberpunk-card bg-gray-900/50 p-2 rounded-lg border border-purple-500/20 mb-2">
+                        <div className="flex items-center justify-between mb-1">
+                            <h2 className="cyberpunk-text text-sm font-bold" data-text="QUICK GUIDE">
+                                QUICK GUIDE
+                            </h2>
+                            <span className="mono-font text-[10px] text-purple-300/60 flex items-center">
+                                <span className="mr-1">&gt;</span>READY
+                            </span>
+                        </div>
+                        <div className="mono-font text-[10px] text-purple-300/80 grid grid-cols-3 gap-1">
+                            <div>&gt; STAKE</div>
+                            <div>&gt; CONFIG</div>
+                            <div>&gt; CREATE</div>
+                        </div>
+                    </div>
+
+                    <div className="mb-2">
+                        <div className="flex items-center justify-between">
+                            <label className="mono-font block text-[10px] font-medium text-gray-300">
+                                Stake Amount
+                            </label>
+                            <span className="mono-font text-[8px] text-purple-300/60">Min: 1 SUI | Pro: 1000 SUI</span>
+                        </div>
+                        <div className="mt-0.5 relative rounded-md shadow-sm">
                             <input
                                 type="number"
                                 value={stakeAmount}
                                 onChange={(e) => setStakeAmount(e.target.value)}
-                                className="block w-full px-4 py-3 rounded-lg border border-gray-600 bg-gray-800/50 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
+                                className="mono-font block w-full px-2 py-1 text-xs rounded-lg border border-gray-600 bg-gray-700/50 text-white placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
                                 min="1"
                                 step="1"
                                 disabled={loading}
+                                placeholder="Enter amount..."
                             />
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-4">
+                    <div className="grid grid-cols-3 gap-1.5">
                         <button
                             onClick={handleStake}
                             disabled={loading}
-                            className="flex-1 relative overflow-hidden bg-purple-600/20 hover:bg-purple-500/30 
-                            text-white px-6 py-3 rounded-lg font-medium backdrop-blur-sm
+                            className="mono-font relative overflow-hidden bg-purple-600/20 hover:bg-purple-500/30 
+                            text-white px-2 py-1 text-xs rounded-lg font-medium backdrop-blur-sm
                             border border-purple-500/30 hover:border-purple-400/50
-                            transform transition-all duration-300 hover:scale-[1.02]"
+                            transform transition-all duration-300"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center">
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Processing...
+                                    Wait
                                 </span>
-                            ) : 'Stake SUI'}
+                            ) : 'Stake'}
                         </button>
                         
                         <button
                             onClick={handleUnstake}
                             disabled={loading || stakeInfo.stakeAmount === BigInt(0)}
-                            className="flex-1 bg-red-600/80 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 backdrop-blur-sm"
+                            className="mono-font bg-red-600/80 hover:bg-red-500 text-white px-2 py-1 text-xs rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 backdrop-blur-sm"
+                            title="Unstake your SUI tokens"
                         >
                             Unstake
                         </button>
@@ -237,34 +307,25 @@ export default function ProducerDashboard() {
                         <button
                             onClick={handleClaimRewards}
                             disabled={loading || stakeInfo.rewards === BigInt(0)}
-                            className="flex-1 bg-green-600/80 hover:bg-green-500 text-white px-6 py-3 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 backdrop-blur-sm"
+                            className="mono-font bg-green-600/80 hover:bg-green-500 text-white px-2 py-1 text-xs rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 backdrop-blur-sm"
+                            title="Claim your earned SUISOUND tokens"
                         >
-                            Claim Rewards
+                            Claim
                         </button>
                     </div>
 
                     {error && (
-                        <div className="mt-6 rounded-lg bg-red-900/50 border border-red-500 p-4">
-                            <div className="flex">
-                                <div className="flex-shrink-0">
-                                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div className="ml-3">
-                                    <p className="text-sm text-red-400">{error}</p>
-                                </div>
+                        <div className="mt-1.5 rounded-lg bg-red-900/50 border border-red-500 p-1.5">
+                            <div className="flex items-center">
+                                <svg className="h-3 w-3 text-red-400 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                                <p className="text-[10px] text-red-400">{error}</p>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
-
-            {/* Test Mint Section */}
-            {/* <div className="bg-gray-800/30 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50">
-                <h3 className="text-xl font-bold mb-4">Test NFT Minting</h3>
-                <TestMint />
-            </div> */}
         </div>
     );
 }
