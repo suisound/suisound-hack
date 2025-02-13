@@ -1,37 +1,149 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { elizaApi } from '../lib/elizaApi';
+import { elizaApi, ChatMessage } from '../lib/elizaApi';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useWalletKit } from '@mysten/wallet-kit';
+import { STORAGE_KEY_PREFIX, stringToUuid } from '../lib/elizaApi';
 
 interface Message {
   text: string;
   isUser: boolean;
+  timestamp?: string;
 }
 
-export default function ElizaChat({ 
-  isOpen, 
-  onClose,
-  isSidebarOpen
-}: { 
-  isOpen: boolean; 
+interface Props {
+  isOpen: boolean;
   onClose: () => void;
   isSidebarOpen: boolean;
-}) {
+  agentId?: string;
+}
+
+export default function ElizaChat({ isOpen, onClose, isSidebarOpen, agentId: providedAgentId }: Props) {
+  const { currentAccount } = useWalletKit();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [agentId, setAgentId] = useState<string | null>(() => {
+    // Try to load from localStorage first
+    if (providedAgentId) return providedAgentId;
+    const stored = localStorage.getItem('lastAgentId');
+    return stored || null;
+  });
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [isTyping, setIsTyping] = useState(false);
 
+  // Load default agent if no agentId provided
+  useEffect(() => {
+    const loadDefaultAgent = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Try to use provided agentId first
+        if (providedAgentId) {
+          console.log('Using provided agent ID:', providedAgentId);
+          const agent = await elizaApi.getAgent(providedAgentId);
+          setAgentId(agent.id);
+          localStorage.setItem('lastAgentId', agent.id);
+          return;
+        }
+        
+        // Try to use stored agentId
+        const storedAgentId = localStorage.getItem('lastAgentId');
+        if (storedAgentId) {
+          console.log('Using stored agent ID:', storedAgentId);
+          const agent = await elizaApi.getAgent(storedAgentId);
+          setAgentId(agent.id);
+          return;
+        }
+        
+        // If no agent ID available, ensure one exists
+        console.log('No agent ID available, ensuring agent exists...');
+        const agent = await elizaApi.ensureAgent();
+        console.log('Using ensured agent:', agent);
+        setAgentId(agent.id);
+        localStorage.setItem('lastAgentId', agent.id);
+      } catch (error) {
+        console.error('Failed to load or create agent:', error);
+        setError('Failed to load or create agent. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadDefaultAgent();
+  }, [providedAgentId]);
+
+  // Set current user when wallet connects
+  useEffect(() => {
+    if (currentAccount?.address) {
+      elizaApi.setCurrentUser(currentAccount.address);
+    }
+  }, [currentAccount]);
+
+  // Load chat history when component mounts or agentId changes
+  useEffect(() => {
+    const loadChatHistory = async () => {
+      if (!agentId) {
+        setError('Agent ID is required');
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        console.log('Loading chat history for agent:', agentId);
+        setError(null);
+        setIsLoading(true);
+        
+        // Get or create persistent roomId for this agent
+        let roomId = localStorage.getItem(`${STORAGE_KEY_PREFIX}${agentId}`);
+        if (!roomId) {
+          roomId = stringToUuid(`room-${agentId}`);
+          localStorage.setItem(`${STORAGE_KEY_PREFIX}${agentId}`, roomId);
+        }
+        
+        const history = await elizaApi.getChatHistory(agentId);
+        console.log('Loaded chat history:', history);
+        if (Array.isArray(history)) {
+          setMessages(history.map(msg => ({
+            text: msg.text,
+            isUser: msg.isUser,
+            timestamp: msg.timestamp
+          })));
+        }
+      } catch (error) {
+        console.error('Failed to load chat history:', error);
+        setError('Failed to load chat history. Please try again.');
+        setMessages([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadChatHistory();
+  }, [agentId]);
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || !agentId) {
+      setError(!agentId ? 'Agent ID is required' : null);
+      return;
+    }
 
-    // Add user message
-    const userMessage = { text: input, isUser: true };
+    const messageText = input.trim();
+    setError(null);
+    
+    // Add user message immediately
+    const userMessage = { 
+      text: messageText, 
+      isUser: true,
+      timestamp: new Date().toISOString()
+    };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsInputFocused(false);
@@ -41,21 +153,58 @@ export default function ElizaChat({
     setIsTyping(true);
 
     try {
-      // Get agent response
-      const response = await elizaApi.sendMessage(input);
+      // Get agent response with streaming
+      const response = await elizaApi.sendMessage(
+        messageText, 
+        agentId,
+        (streamText: string) => {
+          // Update or add the agent's response message
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            
+            // If the last message is from the agent, update it
+            // Otherwise, add a new message
+            if (lastMessage && !lastMessage.isUser) {
+              lastMessage.text = streamText;
+            } else {
+              newMessages.push({
+                text: streamText,
+                isUser: false,
+                timestamp: new Date().toISOString()
+              });
+            }
+            
+            return newMessages;
+          });
+          
+          // Turn off typing indicator once we start receiving the response
+          setIsTyping(false);
+        }
+      );
+      
       setIsTyping(false);
-      const agentMessage = {
-        text: response[0]?.text || 'No response',
-        isUser: false
-      };
-      setMessages(prev => [...prev, agentMessage]);
+      
+      if (!response || !response[0]) {
+        console.error('Invalid response format:', response);
+        throw new Error('Invalid response from agent');
+      }
     } catch (error) {
       console.error('Failed to get response:', error);
       setIsTyping(false);
-      setMessages(prev => [...prev, {
-        text: 'Sorry, I encountered an error. Please try again.',
-        isUser: false
-      }]);
+      setError(error instanceof Error ? error.message : 'Failed to get response');
+      setMessages(prev => {
+        const newMessages = [...prev];
+        // Replace the last message with an error message if it was the agent's response
+        if (newMessages.length > 0 && !newMessages[newMessages.length - 1].isUser) {
+          newMessages[newMessages.length - 1] = {
+            text: 'Sorry, I encountered an error. Please try again.',
+            isUser: false,
+            timestamp: new Date().toISOString()
+          };
+        }
+        return newMessages;
+      });
     }
   };
 
@@ -87,16 +236,14 @@ export default function ElizaChat({
     };
   }, [isInputFocused]);
 
-  if (!isOpen) return null;
-
   return (
     <motion.div 
       ref={containerRef}
       className={`fixed top-[64px] bottom-0 z-[50] flex flex-col overflow-hidden
-        ${isSidebarOpen ? 'md:left-[280px]' : 'left-0'} right-0 transition-[left] duration-300`}
+        ${isSidebarOpen ? 'md:left-[280px]' : 'left-0'} right-0 transition-[left] duration-300
+        ${!isOpen && 'hidden'}`}
       initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: isOpen ? 1 : 0, scale: isOpen ? 1 : 0.98 }}
       transition={{ duration: 0.2 }}
     >
       {/* Animated gradient background */}
@@ -143,6 +290,11 @@ export default function ElizaChat({
 
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/30 text-red-300 p-2 m-4 rounded-lg mono-font text-sm">
+            {error}
+          </div>
+        )}
         {/* Messages */}
         <motion.div 
           className="flex-1 flex flex-col p-4 space-y-4 overflow-y-auto min-h-0 relative"
@@ -150,7 +302,31 @@ export default function ElizaChat({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          {messages.length === 0 ? (
+          {isLoading ? (
+            <motion.div 
+              className="flex-1 flex items-center justify-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="flex space-x-2">
+                <motion.div
+                  className="w-3 h-3 bg-purple-500/50 rounded-full"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                />
+                <motion.div
+                  className="w-3 h-3 bg-purple-500/50 rounded-full"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1, delay: 0.2, repeat: Infinity }}
+                />
+                <motion.div
+                  className="w-3 h-3 bg-purple-500/50 rounded-full"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1, delay: 0.4, repeat: Infinity }}
+                />
+              </div>
+            </motion.div>
+          ) : messages.length === 0 ? (
             <motion.div 
               className="flex-1 flex flex-col items-center justify-center p-4 text-center"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -221,7 +397,7 @@ export default function ElizaChat({
                       {msg.isUser ? (
                         <span className="text-white font-medium">&gt; {msg.text}</span>
                       ) : (
-                        <span className="bg-gradient-to-r from-cyan-300 via-purple-300 to-cyan-300 bg-[length:200%_auto] animate-text-gradient-slow bg-clip-text text-transparent">$ {msg.text}</span>
+                        <span className="bg-gradient-to-r from-cyan-300 via-purple-300 to-cyan-300 bg-[length:200%_auto] animate-text-gradient-slow bg-clip-text text-transparent">{msg.text}</span>
                       )}
                     </div>
                   </motion.div>

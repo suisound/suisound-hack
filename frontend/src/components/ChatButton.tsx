@@ -5,6 +5,7 @@ import ElizaChat from './ElizaChat';
 
 export default function ChatButton() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen] = useState(false);
 
   return (
     <>
@@ -30,7 +31,11 @@ export default function ChatButton() {
         <span>Chat with Agent</span>
       </button>
 
-      <ElizaChat isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <ElizaChat 
+        isOpen={isOpen} 
+        onClose={() => setIsOpen(false)} 
+        isSidebarOpen={isSidebarOpen}
+      />
     </>
   );
 } 

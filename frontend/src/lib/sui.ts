@@ -134,10 +134,33 @@ export class SuiWrapper {
                 return { stakeAmount: BigInt(0), isProStaker: false, rewards: BigInt(0) };
             }
 
+            const stakeAmount = BigInt(stakeFields.amount || 0);
+            const isProStaker = Boolean(stakeFields.is_pro || false);
+            const lastClaimTime = BigInt(stakeFields.last_claim_time || 0);
+            const currentTime = BigInt(Date.now()); // Keep in milliseconds
+            
+            // Calculate rewards using same formula as contract
+            const COOLDOWN_PERIOD = BigInt(86400_000); // 24 hours in milliseconds (same as contract)
+            const REWARD_RATE = BigInt(1);
+            const timeStaked = currentTime - lastClaimTime;
+            const daysStaked = timeStaked / COOLDOWN_PERIOD;
+            const multiplier = isProStaker ? BigInt(5) : BigInt(1);
+            const rewards = (stakeAmount * REWARD_RATE * daysStaked * multiplier) / BigInt(1_000_000_000);
+
+            console.log('Rewards calculation:', {
+                stakeAmount: stakeAmount.toString(),
+                lastClaimTime: lastClaimTime.toString(),
+                currentTime: currentTime.toString(),
+                timeStaked: timeStaked.toString(),
+                daysStaked: daysStaked.toString(),
+                multiplier: multiplier.toString(),
+                rewards: rewards.toString()
+            });
+
             return {
-                stakeAmount: BigInt(stakeFields.amount || 0),
-                isProStaker: Boolean(stakeFields.is_pro || false),
-                rewards: BigInt(0) // We'll calculate this based on time difference later
+                stakeAmount,
+                isProStaker,
+                rewards
             };
         } catch (error) {
             console.error('Error fetching stake info:', error);
@@ -181,13 +204,27 @@ export class SuiWrapper {
                 coinType: `${this.PACKAGE_ID}::suisound::SUISOUND`
             });
 
-            console.log('Found coins:', coins);
+            console.log('Found SUISOUND coins:', JSON.stringify(coins.data, null, 2));
             let totalBalance = BigInt(0);
+            const DECIMALS = BigInt(1_000_000_000); // 9 decimals
+            
             for (const coin of coins.data) {
-                totalBalance += BigInt(coin.balance);
+                console.log('Processing coin:', {
+                    coinId: coin.coinObjectId,
+                    rawBalance: coin.balance,
+                    type: coin.coinType
+                });
+                const rawBalance = BigInt(coin.balance);
+                totalBalance += rawBalance;
+                console.log('Running total (raw):', totalBalance.toString());
+                console.log('Running total (adjusted):', (totalBalance / DECIMALS).toString());
             }
             
-            console.log('Total SUISOUND balance:', totalBalance.toString());
+            console.log('Final SUISOUND balance:', {
+                rawBalance: totalBalance.toString(),
+                adjustedBalance: (totalBalance / DECIMALS).toString(),
+                numCoins: coins.data.length
+            });
             return totalBalance;
         } catch (error) {
             console.error('Error fetching SUISOUND balance:', error);

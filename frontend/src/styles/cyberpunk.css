@@ -41,7 +41,7 @@
 
 .animate-gradient-slow {
   animation: gradient-slow 20s ease infinite;
-  background: linear-gradient(to br,
+  background: linear-gradient(to bottom right,
     rgba(255, 192, 203, 0.15) 0%,
     rgba(255, 0, 255, 0.12) 25%,
     rgba(255, 20, 147, 0.08) 50%,
@@ -52,7 +52,7 @@
 
 .animate-gradient-slow-reverse {
   animation: gradient-slow-reverse 15s ease infinite;
-  background: linear-gradient(to tr,
+  background: linear-gradient(to top right,
     rgba(255, 105, 180, 0.12) 0%,
     rgba(255, 192, 203, 0.1) 25%,
     rgba(255, 0, 255, 0.07) 50%,

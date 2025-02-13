@@ -145,12 +145,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {!currentAccount ? (
                     <div className="min-h-screen flex flex-col">
                         <header className="w-full border-b border-[var(--border-dark)] backdrop-blur-[var(--blur-default)] bg-[var(--bg-darker)]/80">
-                            <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                                <h1 className="cyberpunk-text text-2xl" data-text="suisound">
-                                    suisound
-                                </h1>
-                                <div className="h-[32px] md:h-[40px]">
-                                    <ConnectButton className="!font-['Orbitron'] !text-xs md:!text-sm !min-w-0 !flex !items-center !justify-center !px-2 md:!px-3 !py-0 !h-full cyberpunk-card" />
+                            <div className="container mx-auto px-4 h-16 relative flex items-center">
+                                <div className="absolute inset-x-0 flex items-center justify-center">
+                                    <h1 className="cyberpunk-text text-3xl md:text-4xl text-center" data-text="suisound">
+                                        suisound
+                                    </h1>
+                                </div>
+                                <div className="h-[32px] md:h-[40px] ml-auto">
+                                    <ConnectButton className="!font-['Orbitron'] !text-sm md:!text-base !min-w-0 !flex !items-center !justify-center !px-2 md:!px-3 !py-0 !h-full cyberpunk-card" />
                                 </div>
                             </div>
                         </header>
@@ -169,9 +171,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                             {/* Header */}
                             <header className="sticky top-0 z-[var(--z-sticky)] bg-[var(--bg-darker)]/80 backdrop-blur-[var(--blur-default)] 
                                 border-b border-[var(--border-dark)] shadow-[var(--shadow-md)]">
-                                <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 h-14 md:h-16 px-3 md:px-4">
+                                <div className="relative flex items-center justify-between h-14 md:h-16 px-3 md:px-4">
                                     {/* Menu button with tooltip */}
-                                    <div className="w-[40px] relative group">
+                                    <div className="relative group z-10">
                                         <button
                                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
                                             className="cyberpunk-card p-2 bg-gray-800/50 rounded-lg backdrop-blur-xl border border-purple-500/20 
@@ -185,24 +187,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                             </svg>
                                         </button>
                                         <div className="absolute left-0 top-full mt-2 hidden group-hover:block">
-                                            <div className="bg-gray-900/95 text-xs mono-font p-2 rounded-lg border border-purple-500/20 whitespace-nowrap">
+                                            <div className="bg-gray-900/95 text-sm mono-font p-2 rounded-lg border border-purple-500/20 whitespace-nowrap">
                                                 Toggle Navigation Menu
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Center section with branding and title */}
-                                    <div className="flex justify-center items-center">
+                                    <div className="absolute inset-x-0 flex items-center justify-center">
                                         <div className="flex flex-col items-center">
                                             <button 
                                                 onClick={() => handleNavigation('dashboard')}
-                                                className="cyberpunk-text text-2xl md:text-3xl font-bold hover:opacity-80 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-lg"
+                                                className="cyberpunk-text text-3xl md:text-4xl font-bold hover:opacity-80 transition-opacity duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500/50 rounded-lg"
                                                 data-text="suisound"
                                                 aria-label="Go to dashboard"
                                             >
                                                 suisound
                                             </button>
-                                            <div className="mono-font text-xs md:text-sm text-purple-300/80 mt-0.5 tracking-wider">
+                                            <div className="mono-font text-sm md:text-base text-purple-300/80 mt-1 tracking-wider">
                                                 {currentView === 'dashboard' ? '> DASHBOARD_ACTIVE' : 
                                                  currentView === 'configure' ? '> CONFIG_MODE' : '> CHAT_INTERFACE'}
                                             </div>
@@ -210,12 +212,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                     </div>
 
                                     {/* Right section with disconnect button */}
-                                    <div className="w-[100px] md:w-[120px] h-[32px] md:h-[40px]">
+                                    <div className="w-[100px] md:w-[120px] h-[32px] md:h-[40px] z-10">
                                         <div className="group relative" title="Disconnect wallet">
                                             <button
                                                 onClick={disconnect}
                                                 className="cyberpunk-card w-full h-full px-2 md:px-3 bg-red-500/20 hover:bg-red-500/30 
-                                                text-white text-xs md:text-sm rounded-lg border border-red-500/30 hover:border-red-400/50 
+                                                text-white text-sm md:text-base rounded-lg border border-red-500/30 hover:border-red-400/50 
                                                 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500/50 
                                                 whitespace-nowrap shadow-lg backdrop-blur-sm hover:shadow-red-500/10 mono-font relative overflow-hidden"
                                                 aria-label="Disconnect wallet"
@@ -224,7 +226,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                                 <span className="relative z-10">DISCONNECT</span>
                                             </button>
                                             <div className="absolute right-0 top-full mt-2 hidden group-hover:block">
-                                                <div className="bg-gray-900/95 text-xs mono-font p-2 rounded-lg border border-red-500/20">
+                                                <div className="bg-gray-900/95 text-sm mono-font p-2 rounded-lg border border-red-500/20">
                                                     Disconnect your wallet
                                                 </div>
                                             </div>
